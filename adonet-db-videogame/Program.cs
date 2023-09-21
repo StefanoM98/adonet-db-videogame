@@ -34,8 +34,39 @@
                         Console.WriteLine();
 
                         break;
+
                     case 2:
+
                         Console.WriteLine("Hai scelto di inserire un nuovo videogioco");
+
+                        Console.WriteLine("Inserisci il nome del videogioco");
+
+                        string nome = Console.ReadLine();
+
+                        Console.WriteLine("Inserisci la overview del videogioco");
+
+                        string overview = Console.ReadLine();
+
+                        Console.WriteLine("Inserisci la data di rilascio");
+
+                        DateTime release_date = DateTime.Parse(Console.ReadLine());
+
+                        Console.WriteLine("Inserisci la Software House con ID");
+
+                        long software_house_id = long.Parse(Console.ReadLine());
+
+                        Videogioco nuovoGioco = new Videogioco(0, nome, overview, release_date, software_house_id);
+
+                        bool inserito = ManagerDBVideogame.InserisciVideogioco(nuovoGioco);
+
+                        if (inserito)
+                        {
+                            Console.WriteLine("Videogioco inserito con successo");
+                        } else
+                        {
+                            Console.WriteLine("Errore!!");
+                        }
+
                         break;
                     case 3:
                         Console.WriteLine("Hai scelto di ricercare un videogioco per il suo id");
