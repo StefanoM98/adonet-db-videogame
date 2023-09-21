@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data.SqlClient;
 
 namespace adonet_db_videogame
 {
@@ -59,7 +53,7 @@ namespace adonet_db_videogame
 
                     int rows = cmd.ExecuteNonQuery();
 
-                    if(rows > 0)
+                    if (rows > 0)
                     {
                         return true;
                     }
@@ -70,6 +64,94 @@ namespace adonet_db_videogame
                 }
                 return false;
             }
+        }
+
+        public static Videogioco RicercaPerIdGioco(long IdDaCercare)
+        {
+            using (SqlConnection nuovaConnessione = new SqlConnection(connessione))
+            {
+                try
+                {
+                    nuovaConnessione.Open();
+
+                    string query = "SELECT * FROM videogames WHERE id = @Id";
+
+                    using (SqlCommand cmd = new SqlCommand(query, nuovaConnessione))
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@Id", IdDaCercare));
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Console.WriteLine($"Il videogioco è: {reader["name"]}");
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                return null;
+            }
+        }
+
+        public static List<Videogioco> RicercaPerStringa(string StringaDaCercare)
+        {
+            List<Videogioco> videogiocoCercato = new List<Videogioco>();
+
+            using (SqlConnection nuovaConnessione = new SqlConnection(connessione))
+            {
+                try
+                {
+                    nuovaConnessione.Open();
+                    string query = "SELECT id, name, overview, release_date, software_house_id FROM videogames WHERE name LIKE @Name";
+
+                    using (SqlCommand cmd = new SqlCommand(query, nuovaConnessione))
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@Name", $"%{StringaDaCercare}%"));
+                        using (SqlDataReader data = cmd.ExecuteReader())
+                        {
+                            while (data.Read())
+                            {
+                                Videogioco nuovaRicerca = new Videogioco(data.GetInt64(0), data.GetString(1), data.GetString(2), data.GetDateTime(3), data.GetInt64(4));
+                                videogiocoCercato.Add(nuovaRicerca);
+                            }
+                        }
+                    }
+                } catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                return videogiocoCercato;
+            }
+        }
+        public static bool EliminaVideogame(long IdDaEliminare)
+        {
+            using (SqlConnection nuovaConnessione = new SqlConnection(connessione))
+            {
+                try
+                {
+                    nuovaConnessione.Open();
+                    string query = "DELETE FROM videogames WHERE id = @Id";
+                    SqlCommand cmd = new SqlCommand(query, nuovaConnessione);
+
+                    cmd.Parameters.Add(new SqlParameter("@Id", IdDaEliminare));
+
+                    int rows = cmd.ExecuteNonQuery();
+
+                    if (rows > 0)
+                    {
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                return false;
+            }
+
         }
     }
 }
